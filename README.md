@@ -1,37 +1,61 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Furniture Matching Exercise</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Furniture Word Game</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5e7c8;
-            text-align: center;
-            padding: 20px;
+        body { font-family: 'Arial', sans-serif; background-color: #f0f9ff; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        h1 { color: #2c3e50; }
+        .game-container { display: flex; gap: 40px; margin-top: 20px; max-width: 900px; }
+        
+        /* Containers for words and images */
+        .column { display: flex; flex-direction: column; gap: 15px; }
+        
+        .item { 
+            padding: 15px 25px; background: white; border: 2px solid #3498db; 
+            border-radius: 8px; cursor: pointer; text-align: center;
+            transition: all 0.2s; user-select: none; font-weight: bold;
+        }
+        
+        .img-slot {
+            width: 100px; height: 100px; background: #ecf0f1;
+            border: 2px dashed #bdc3c7; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 40px; position: relative;
         }
 
-        h2 {
-            color: #d35400;
-        }
+        .selected { background: #3498db; color: white; transform: scale(1.05); }
+        .matched { background: #2ecc71 !important; border-color: #27ae60 !important; color: white; cursor: default; }
+        .wrong { background: #e74c3c !important; border-color: #c0392b !important; color: white; }
 
-        .word-container {
-            margin-bottom: 20px;
-        }
+        #score-board { margin-bottom: 20px; font-size: 1.2rem; }
+        button { margin-top: 20px; padding: 10px 20px; cursor: pointer; background: #3498db; color: white; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
 
-        .word {
-            display: inline-block;
-            background: orange;
-            color: white;
-            padding: 10px 18px;
-            margin: 5px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+    <h1>Furniture Matching Game</h1>
+    <div id="score-board">Items Remaining: <span id="count">12</span></div>
 
-        .selected {
-            background: green;
+    <div class="game-container">
+        <div class="column" id="words-container"></div>
+        
+        <div class="column" id="images-container"></div>
+    </div>
+
+    <button onclick="location.reload()">Reset Game</button>
+
+    <script>
+        const furnitureData = [
+            { name: 'Bed', icon: '🛏️' },
+            { name: 'Sofa', icon: '🛋️' },
+            { name: 'Wardrobe', icon: '👗' },
+            { name: 'Chair', icon: '🪑' },
+            { name: 'Bath', icon: '🛀' },
+            { name: 'Shower', icon: '🚿' },
+            { name: 'Armchair', icon: '💺' },
+            { name: 'Oven', icon: '🍳' },
         }
 
         .grid {
