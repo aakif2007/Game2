@@ -1,190 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Furniture Word Game</title>
-    <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f0f9ff; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        h1 { color: #2c3e50; }
-        .game-container { display: flex; gap: 40px; margin-top: 20px; max-width: 900px; }
-        
-        /* Containers for words and images */
-        .column { display: flex; flex-direction: column; gap: 15px; }
-        
-        .item { 
-            padding: 15px 25px; background: white; border: 2px solid #3498db; 
-            border-radius: 8px; cursor: pointer; text-align: center;
-            transition: all 0.2s; user-select: none; font-weight: bold;
-        }
-        
-        .img-slot {
-            width: 100px; height: 100px; background: #ecf0f1;
-            border: 2px dashed #bdc3c7; border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 40px; position: relative;
-        }
-
-        .selected { background: #3498db; color: white; transform: scale(1.05); }
-        .matched { background: #2ecc71 !important; border-color: #27ae60 !important; color: white; cursor: default; }
-        .wrong { background: #e74c3c !important; border-color: #c0392b !important; color: white; }
-
-        #score-board { margin-bottom: 20px; font-size: 1.2rem; }
-        button { margin-top: 20px; padding: 10px 20px; cursor: pointer; background: #3498db; color: white; border: none; border-radius: 5px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Furniture Word Game</title>
+<style>
+body{
+font-family:Arial,sans-serif;
+background:linear-gradient(135deg,#87CEFA,#FFE082);
+text-align:center;
+padding:20px;
+margin:0;
+}
+.game{
+max-width:700px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:25px;
+box-shadow:0 8px 20px rgba(0,0,0,.2);
+}
+h1{color:#ff6f00}
+.card{
+font-size:80px;
+padding:20px;
+}
+.question{
+font-size:28px;
+margin:15px;
+font-weight:bold;
+}
+button{
+padding:12px 18px;
+margin:8px;
+border:none;
+border-radius:15px;
+font-size:18px;
+cursor:pointer;
+background:#4CAF50;
+color:white;
+}
+button:hover{transform:scale(1.05)}
+.score{font-size:22px;margin:15px;color:#1565c0}
+#result{font-size:24px;font-weight:bold}
+</style>
 </head>
 <body>
+<div class="game">
+<h1>🏠 Furniture Word Game</h1>
+<div class="score">Score: <span id="score">0</span></div>
+<div class="card" id="emoji">🪑</div>
+<div class="question">What is this?</div>
+<div id="options"></div>
+<div id="result"></div>
+<button onclick="nextGame()">Next</button>
+</div>
+<script>
+const data=[
+{name:'Chair',emoji:'🪑'},
+{name:'Bed',emoji:'🛏️'},
+{name:'Lamp',emoji:'💡'},
+{name:'Sofa',emoji:'🛋️'},
+{name:'Door',emoji:'🚪'},
+{name:'Table',emoji:'🍽️'},
+{name:'Clock',emoji:'🕒'},
+{name:'Cupboard',emoji:'🗄️'}
+];
+let score=0;
+let current;function shuffle(a){ return [...a].sort(()=>Math.random()-0.5) }
 
-    <h1>Furniture Matching Game</h1>
-    <div id="score-board">Items Remaining: <span id="count">12</span></div>
+function nextGame(){ document.getElementById('result').innerHTML=''; current=data[Math.floor(Math.random()*data.length)]; document.getElementById('emoji').innerHTML=current.emoji;
 
-    <div class="game-container">
-        <div class="column" id="words-container"></div>
-        
-        <div class="column" id="images-container"></div>
-    </div>
+let opts=[current.name]; while(opts.length<4){ let x=data[Math.floor(Math.random()*data.length)].name; if(!opts.includes(x))opts.push(x); } opts=shuffle(opts);
 
-    <button onclick="location.reload()">Reset Game</button>
+let html=''; opts.forEach(o=>{ html+=<button onclick="check('${o}')">${o}</button>; }); document.getElementById('options').innerHTML=html; }
 
-    <script>
-        const furnitureData = [
-            { name: 'Bed', icon: '🛏️' },
-            { name: 'Sofa', icon: '🛋️' },
-            { name: 'Wardrobe', icon: '👗' },
-            { name: 'Chair', icon: '🪑' },
-            { name: 'Bath', icon: '🛀' },
-            { name: 'Shower', icon: '🚿' },
-            { name: 'Armchair', icon: '💺' },
-            { name: 'Oven', icon: '🍳' },
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 180px);
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .card {
-            background: white;
-            border: 2px solid #ccc;
-            padding: 10px;
-            border-radius: 10px;
-        }
-
-        .card img {
-            width: 120px;
-            height: 120px;
-            object-fit: contain;
-        }
-
-        .drop-area {
-            margin-top: 10px;
-            border: 2px dashed #999;
-            padding: 10px;
-            min-height: 40px;
-            border-radius: 8px;
-        }
-
-        .correct {
-            background: lightgreen;
-        }
-
-        .wrong {
-            background: #ffb3b3;
-        }
-    </style>
-</head>
-
-<body>
-
-    <h2>Furniture Matching Exercise</h2>
-    <p>Click a word and match it to the correct picture.</p>
-
-    <div class="word-container">
-        <span class="word" data-word="bed">Bed</span>
-        <span class="word" data-word="chair">Chair</span>
-        <span class="word" data-word="table">Table</span>
-        <span class="word" data-word="sofa">Sofa</span>
-        <span class="word" data-word="bath">Bath</span>
-        <span class="word" data-word="cupboard">Cupboard</span>
-    </div>
-
-    <div class="grid">
-
-        <div class="card">
-            <img src="https://cdn-icons-png.flaticon.com/512/3050/3050525.png">
-            <div class="drop-area" data-answer="bed"></div>
-        </div>
-
-        <div class="card">
-            <img src="https://cdn-icons-png.flaticon.com/512/892/892458.png">
-            <div class="drop-area" data-answer="chair"></div>
-        </div>
-
-        <div class="card">
-            <img src="https://cdn-icons-png.flaticon.com/512/2421/2421989.png">
-            <div class="drop-area" data-answer="cupboard"></div>
-        </div>
-
-        <div class="card">
-            <img src="https://cdn-icons-png.flaticon.com/512/2933/2933885.png">
-            <div class="drop-area" data-answer="bath"></div>
-        </div>
-
-        <div class="card">
-            <img src="https://cdn-icons-png.flaticon.com/512/3082/3082037.png">
-            <div class="drop-area" data-answer="sofa"></div>
-        </div>
-
-        <div class="card">
-            <img src="https://cdn-icons-png.flaticon.com/512/1533/1533768.png">
-            <div class="drop-area" data-answer="table"></div>
-        </div>
-
-    </div>
-
-    <script>
-        let selectedWord = "";
-
-        const words = document.querySelectorAll(".word");
-
-        words.forEach(word => {
-            word.addEventListener("click", () => {
-
-                document.querySelectorAll(".word")
-                    .forEach(w => w.classList.remove("selected"));
-
-                word.classList.add("selected");
-                selectedWord = word.dataset.word;
-            });
-        });
-
-        const areas = document.querySelectorAll(".drop-area");
-
-        areas.forEach(area => {
-            area.addEventListener("click", () => {
-
-                if (!selectedWord) {
-                    alert("Select a word first!");
-                    return;
-                }
-
-                area.innerHTML = selectedWord;if (selectedWord === area.dataset.answer) {
-                    area.classList.add("correct");
-                    area.classList.remove("wrong");
-                } else {
-                    area.classList.add("wrong");
-                    area.classList.remove("correct");
-                }
-
-                document.querySelectorAll(".word")
-                    .forEach(w => w.classList.remove("selected"));
-
-                selectedWord = "";
-            });
-        });
-    </script>
+function check(ans){ if(ans===current.name){ score++; document.getElementById('result').innerHTML='✅ Correct!'; }else{ document.getElementById('result').innerHTML='❌ Answer: '+current.name; } document.getElementById('score').innerHTML=score; } nextGame(); </script>
 
 </body>
 </html>
